@@ -105,6 +105,8 @@ directory. If you wanted you could also edit the config files in `configs` direc
 Nvidia GPU's are required for training. These models require quite a lot of VRAM, you can change the `batch_size`
 parameter in the configs to suit your needs.
 
+Add the `--debug` flag at the end if you just want to do a debug run (train on one batch and validation and then cleans up after itself)
+
 To train on a single GPU:
 
 ```shell
