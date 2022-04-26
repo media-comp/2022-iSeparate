@@ -1,0 +1,23 @@
+name: iSeparate
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ffmpeg=4.3.2
+  - pip
+  - pip:
+    - librosa
+    - pyyaml
+    - tqdm
+    - matplotlib
+    - tensorboard
+    - julius
+    - wget
+    - stempeg
+    - musdb
+    - museval
+    - norbert
+    - git+https://github.com/NVIDIA/dllogger#egg=dllogger
+    - pytest
+    - torch==1.11.0
+    - torchaudio==0.11.0

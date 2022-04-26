@@ -1,0 +1,116 @@
+# experiment params
+exp_dir: exp/               # Path to the directory where the training logs and checkpoints will be stored
+
+model_name: D3Net          # This choice affects choice of models and loss functions in code, current acceptable values
+                            # are 'Demucs' and 'D3Net', check models/model_switcher.py and losses/loss_switcher.py.
+                            # Will create a folder under exp_dir with the model name
+
+exp_name: other       # This will create a directory under the 'exp_dir/model_name',
+                            # change this for different experiments
+
+use_date_time_ref: false    # whether to append a date-time reference to the end of exp_name.
+                            # Use this if you would like to keep the exp_name same but have different experiment folders
+                            # based on when you run the experiment
+
+seed: 42                    # Seed for all random number generators for reproducibility
+cpu_run: false              # Whether to turn off GPU use
+
+# distributed params: if distributed is true, use these parameters for initializing pytorch distributed training
+dist_url: tcp://localhost:23456  # change the port number if you run multiple simultaneous trainings on the same machine
+group_name: group_name
+dist_backend: nccl
+
+# optimization params
+epochs: 100                 # number of epochs
+lr: 0.001                   # initial learning rate
+batch_size: 32              # batch size
+scheduler_step_epoch: 40   # for step learning rate scheduler, this is number of epochs (not iteration)
+scheduler_gamma: 0.1        # multiplier for learning rate decay
+amp: true                   # whether to use automatic mixed precision training
+cudnn_enabled: true         # whether to use cudnn
+cudnn_benchmark: true       # whether to use cudnn benchmark mode
+
+# checkpoint and validation params
+checkpoint_path: ''         # provide checkpoint path if you want to restart training or finetune
+resume_from_last: false     # if true, finds the last checkpoint in the current experiment directory and resumes
+save_interval: 100          # Number of iterations (not epochs) before saving a checkpoint
+eval_interval: 100          # Number of iterations (not epochs) before running validation
+val_patch_length: 512      # validation patch length, currently only implemented for D3Net
+num_workers: 25             # Number of workers for training data loading
+
+# spectrogram statistics of the training subset of the MUSDB dataset, set to null, and it will compute and store during
+# training. This is only used for D3Net, Demucs does not use spectrogram
+stats_path: data/MUSDB18-wav/musdb_train.stats
+use_stats: true
+
+loss_fn: l2_loss          # which loss function to use, check losses/loss_switcher.py
+
+
+# the following parameters are passed directly as key-value arguments to the respective class init functions
+# so please be careful, the names are actual function argument names.
+
+# model parameters, check specific model class for more details
+model_args:
+  audio_channels: 2
+  init_channels:
+    full: 32
+    bands: [32, 8]
+  band_split_idxs: [256]
+  valid_signal_index: 1600
+  growth_rates:
+    full: [13, 14, 15, 16, 17, 16, 14, 12, 11]
+    bands: [[16, 18, 20, 22, 20, 18, 16], [2, 2, 2, 2, 2]]
+    final: 12
+  num_layers:
+    full: [4, 5, 6, 7, 8, 6, 5, 4, 4]
+    bands: [[5, 5, 5, 5, 4, 4, 4], [1, 1, 1, 1, 1]]
+    final: 3
+  num_blocks:
+    full: [2, 2, 2, 2, 2, 2, 2, 2, 2]
+    bands: [[2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1]]
+  kernel_size: 3
+  padding: 1
+  num_outs:
+    full: 1
+    bands: [1, 1]
+    final: 1
+  n_fft: 4096
+  win_length: 4096
+  hop_length: 1024
+  patch_length: 256
+
+# data loader arguments
+data_loader_args:
+
+  # for training data loader
+  train:
+    target_sources: ['other']
+    mixing_sources: ['vocals', 'drums', 'bass', 'other']
+    data_root: data/MUSDB18-wav
+    song_lists: [filelists/musdb/train.txt]
+    sample_rate: 44100
+    mono: false
+    seq_dur: 6
+    augmentations: [random_gain, swap_channel]
+    pitch_shift_time_stretch_params: null
+    random_mix: true
+    seed: 42
+    iseval: false
+    cache: true
+    samples_per_epoch: 6400
+
+  # for validation data loader
+  validation:
+    target_sources: ['other']
+    mixing_sources: ['vocals', 'drums', 'bass', 'other']
+    data_root: data/MUSDB18-7s-wav
+    song_lists: [filelists/musdb/validation.txt]
+    sample_rate: 44100
+    mono: false
+    seq_dur: 20
+    augmentations: null
+    pitch_shift_time_stretch_params: null
+    random_mix: false
+    seed: 42
+    iseval: true
+    cache: true

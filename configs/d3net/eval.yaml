@@ -1,0 +1,21 @@
+model_path:
+  vocals: exp/D3Net/vocals/checkpoint_D3Net_best.pt
+  bass: null
+  drums: null
+  other: null
+
+musdb_config:
+  root: data/MUSDB18-wav
+  subsets: test
+  is_wav: true
+
+model_name: D3Net
+output_dir: results/D3Net/estimates
+eval_dir: results/D3Net/scores
+
+nproc: 1
+
+eval_params:
+  niter: 1
+  cpu_only: false
+  softmask: false

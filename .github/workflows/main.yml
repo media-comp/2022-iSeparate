@@ -1,0 +1,31 @@
+name: Test iSeparate
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: iSeparate
+          environment-file: environment-cpu.yml
+          python-version: 3.8
+
+      - name: Install linux dependencies
+        run: sudo apt-get install -y libsndfile1 soundstretch
+
+      - name: Run all tests
+        run: |
+          pip install pytest
+          pytest -s

@@ -1,0 +1,16 @@
+model_path: exp/Demucs/all_targets/checkpoint_Demucs_last.pt
+
+musdb_config:
+  root: data/MUSDB18-wav
+  subsets: test
+  is_wav: true
+
+model_name: Demucs
+output_dir: results/Demucs/estimates
+eval_dir: results/Demucs/scores
+
+nproc: 1
+
+eval_params:
+  cpu_only: false
+  shifts: 0
