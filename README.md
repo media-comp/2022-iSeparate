@@ -116,3 +116,13 @@ python -m torch.distributed.run \
                --config-file configs/<method>/<config-name.yaml>
 ```
 
+## Extending and Contributing
+If you would like to add a new method and train on the MUSDB18 dataset, do the following steps
+    
+   - create a model package: `models/awesome-method`
+        - implement your model
+        - add the `separate.py` file and implement the `load_models` and `separate` functions
+        - add the model to `model_switcher.py`
+   - create and/or add your custom loss functions to the `losses/loss_switcher.py`
+   - create config files following the examples in `configs` directory 
+   
