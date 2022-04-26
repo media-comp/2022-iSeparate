@@ -11,8 +11,8 @@ of [Yusuke Matsui](https://yusukematsui.me/) sensei.
 ## Currently implemented methods:
 | Model | Paper | Official code |
 | :---: | :---: | :---: |
-| D3Net  | [Densely connected multidilated convolutional networks for dense prediction tasks (CVPR 2021, Takahashi et al., Sony)](https://openaccess.thecvf.com/content/CVPR2021/papers/Takahashi_Densely_Connected_Multi-Dilated_Convolutional_Networks_for_Dense_Prediction_Tasks_CVPR_2021_paper.pdf) | [link](https://github.com/sony/ai-research-code/tree/master/d3net/music-source-separation) |
-| Demucs v2  | [Music Source Separation in the Waveform Domain (Arxiv 2021, Defossez et al., Facebook, INRIA)](https://hal.archives-ouvertes.fr/hal-02379796/document) | [link](https://github.com/facebookresearch/demucs/tree/v2) |
+| D3Net  | [Densely connected multidilated convolutional networks for dense prediction tasks <br />(CVPR 2021, Takahashi et al., Sony)](https://openaccess.thecvf.com/content/CVPR2021/papers/Takahashi_Densely_Connected_Multi-Dilated_Convolutional_Networks_for_Dense_Prediction_Tasks_CVPR_2021_paper.pdf) | [link](https://github.com/sony/ai-research-code/tree/master/d3net/music-source-separation) |
+| Demucs v2  | [Music Source Separation in the Waveform Domain <br />(Arxiv 2021, Defossez et al., Facebook, INRIA)](https://hal.archives-ouvertes.fr/hal-02379796/document) | [link](https://github.com/facebookresearch/demucs/tree/v2) |
 
 ## Getting Started
 ### For Linux users:
