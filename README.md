@@ -9,16 +9,10 @@ the course [Media Computing in Practice](https://media-comp.github.io/2022/) at 
 of [Yusuke Matsui](https://yusukematsui.me/) sensei.
 
 ## Currently implemented methods:
-- D3Net
-  - Densely connected multidilated convolutional networks for dense prediction tasks 
-  - CVPR 2021, Takahashi et al., Sony
-    - paper: [link](https://openaccess.thecvf.com/content/CVPR2021/papers/Takahashi_Densely_Connected_Multi-Dilated_Convolutional_Networks_for_Dense_Prediction_Tasks_CVPR_2021_paper.pdf)
-    - official code: [link](https://github.com/sony/ai-research-code/tree/master/d3net/music-source-separation)
-- Demucs (v2)
-  - Music Source Separation in the Waveform Domain 
-  - Arxiv 2021, Defossez et al., Facebook, INRIA
-    - paper: [link](https://hal.archives-ouvertes.fr/hal-02379796/document)
-    - official code: [link](https://github.com/facebookresearch/demucs/tree/v2)
+| Model | Paper | Official code |
+| :---: | :---: | :---: |
+| D3Net  | [Densely connected multidilated convolutional networks for dense prediction tasks (CVPR 2021, Takahashi et al., Sony)](https://openaccess.thecvf.com/content/CVPR2021/papers/Takahashi_Densely_Connected_Multi-Dilated_Convolutional_Networks_for_Dense_Prediction_Tasks_CVPR_2021_paper.pdf) | [link](https://github.com/sony/ai-research-code/tree/master/d3net/music-source-separation) |
+| Demucs v2  | [Music Source Separation in the Waveform Domain (Arxiv 2021, Defossez et al., Facebook, INRIA)](https://hal.archives-ouvertes.fr/hal-02379796/document) | [link](https://github.com/facebookresearch/demucs/tree/v2) |
 
 ## Getting Started
 ### For Linux users:
@@ -53,7 +47,8 @@ conda activate <envname>
   To do
 
 ## Separate using pre-trained model
-**Currently the D3Net model has been uploaded to Huggingface** and you can run inference
+**Currently the D3Net model has been uploaded to Huggingface** and you can 
+run vocals-accompaniment separation
 using that model with the `separate.py` script. Invoke the separation as follows:
   
 ```shell
