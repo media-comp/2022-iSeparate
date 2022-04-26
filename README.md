@@ -34,13 +34,19 @@ If you use anaconda or miniconda, you can quickly create an environment using th
 For GPU machines:
 
 ```shell
-conda env create --file=environment-cuda.yml
+conda env create --name <envname> --file=environment-cuda.yml
 ```
 
 For CPU only machines:
 
 ```shell
-conda env create --file=environment-cpu.yml
+conda env create --name <envname> --file=environment-cpu.yml
+```
+
+After creating the environment you can activate it as below:
+
+```shell
+conda activate <envname>
 ```
 
 ### For Windows and Mac users:
