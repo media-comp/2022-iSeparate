@@ -1,5 +1,5 @@
 model_path:
-  vocals: exp/D3Net/vocals/checkpoint_D3Net_best.pt
+  vocals: exp/D3Net/vocals.pt
   bass: null
   drums: null
   other: null

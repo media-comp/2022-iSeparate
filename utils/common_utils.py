@@ -40,7 +40,7 @@ def preprocess_audio(audio, orig_rate, target_models):
     target_rate = target_models[list(target_models.keys())[0]]['config'].data_loader_args['train']['sample_rate']
     resample_fn = torchaudio.transforms.Resample(orig_freq=orig_rate, new_freq=target_rate)
 
-    audio = audio.transpose(0, 1)
+    # audio = audio.transpose(0, 1)
     # print(audio.min(), audio.max())
     if mono:
         audio = audio.mean(dim=0, keepdim=True)

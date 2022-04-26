@@ -72,10 +72,10 @@ def evaluate(args, model, eval_loader, distributed_run, tb_logger, iteration):
                     y_hat_wav = output[0, :, :1].detach()
                 elif len(output.shape) == 5:
                     y_hat_mag = output[0, 0, :1].detach().transpose(1, 2)
-                    y_stft = model.spectrogram_function.transform(y_wav[0], patch_length=args.val_patch_length,
+                    y_stft = model.time_domain_wrapper.transform(y_wav[0], patch_length=args.val_patch_length,
                                                                   return_magnitude=False)
                     y_hat_phase = y_stft.angle()
-                    y_hat_wav = model.spectrogram_function.inverse_transform(magnitude=y_hat_mag, phase=y_hat_phase)
+                    y_hat_wav = model.time_domain_wrapper.inverse_transform(magnitude=y_hat_mag, phase=y_hat_phase)
             if args.debug:
                 break
         tb_logger.log_audio(x_wav.cpu(), y_wav.cpu(), y_hat_wav.cpu(), args.data_loader_args['train']['target_sources'])

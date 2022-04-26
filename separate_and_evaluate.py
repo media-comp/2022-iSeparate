@@ -26,7 +26,7 @@ def separate_and_evaluate(
 ):
     model_loader, separator = get_separation_funcs(_model_name)
     model = model_loader(_model_path)
-    audio = torch.as_tensor(_track.audio, dtype=torch.float32)
+    audio = torch.as_tensor(_track.audio, dtype=torch.float32).transpose(0, 1)
     audio = preprocess_audio(audio, _track.rate, model)
 
     estimates = separator(

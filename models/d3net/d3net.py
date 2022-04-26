@@ -266,7 +266,7 @@ class MMD3Net(nn.Module):
         self.nb_output_bins = self.nb_bins
 
         self.patch_length = patch_length
-        self.spectrogram_function = SpectrogramFunction(n_fft, hop_length, win_length)
+        self.time_domain_wrapper = SpectrogramFunction(n_fft, hop_length, win_length)
 
         # full band network
         self.full_net = nn.Sequential(
@@ -390,7 +390,7 @@ class MMD3Net(nn.Module):
         if patch_length == -1:
             patch_length = self.patch_length
 
-        x = self.spectrogram_function.transform(x, patch_length=patch_length, return_magnitude=True).transpose(2, 3)
+        x = self.time_domain_wrapper.transform(x, patch_length=patch_length, return_magnitude=True).transpose(2, 3)
 
         left_pad = 0
         right_pad = 0
@@ -403,8 +403,8 @@ class MMD3Net(nn.Module):
         if y is not None:
             assert y.shape[1] == 1, 'D3Net supports only single target training'
             # y = y.squeeze(1)
-            y = self.spectrogram_function.transform(y, patch_length=patch_length,
-                                                    return_magnitude=True).transpose(3, 4)
+            y = self.time_domain_wrapper.transform(y, patch_length=patch_length,
+                                                   return_magnitude=True).transpose(3, 4)
             # y = F.pad(y, (0, 0, left_pad, right_pad))
 
         final_out = self.process_spects(x)
@@ -419,7 +419,7 @@ class MMD3Net(nn.Module):
         return outputs
 
     def separate(self, audio, hop_length=None):
-        spect = self.spectrogram_function.transform(audio, return_magnitude=True).transpose(2, 3)  # b, c, t, f
+        spect = self.time_domain_wrapper.transform(audio, return_magnitude=True).transpose(2, 3)  # b, c, t, f
         b, c, t, f = spect.shape
 
         hop_length = hop_length if hop_length is not None else self.patch_length // 2

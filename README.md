@@ -28,7 +28,7 @@ Install the [libsndfile](http://www.mega-nerd.com/libsndfile/) and
   ```shell
     sudo apt-get install libsndfile1 soundstretch
   ```
-
+### For Windows and Linux users
 If you use anaconda or miniconda, you can quickly create an environment using the provided environment yaml files.
 
 For GPU machines:
@@ -49,11 +49,24 @@ After creating the environment you can activate it as below:
 conda activate <envname>
 ```
 
-### For Windows and Mac users:
+### For Mac users:
   To do
 
 ## Separate using pre-trained model
-  To do
+**Currently the D3Net model has been uploaded to Huggingface** and you can run inference
+using that model with the `separate.py` script. Invoke the separation as follows:
+  
+```shell
+python separate.py \
+                -c configs/d3net/eval.yaml \
+                -i path/to/song.wav
+```
+Currently only `.wav` files are supported. 
+You can use the following command to convert `.mp3` file to `.wav` file within the conda environment created above:
+
+```
+ffmpeg -i song.mp3 song.wav
+``` 
 
 ## Dataset Preparation and Training
 If you would like to train the models yourself, please follow the following procedure
