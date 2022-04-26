@@ -8,6 +8,9 @@ This project was started as part of the requirement for
 the course [Media Computing in Practice](https://media-comp.github.io/2022/) at the University of Tokyo, under the guidance
 of [Yusuke Matsui](https://yusukematsui.me/) sensei.
 
+This is a work in progress, current results are decent but not as good as reported in the papers, please use with a pinch of salt.
+Will continue to try and improve the quality of separation.
+
 ## Currently implemented methods:
 | Model | Paper | Official code |
 | :---: | :---: | :---: |
