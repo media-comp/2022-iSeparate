@@ -60,13 +60,13 @@ python separate.py \
                 -c configs/d3net/eval.yaml \
                 -i path/to/song.wav
 ```
-Currently only `.wav` files are supported. 
+Currently only `.wav` files are supported on windows. 
 You can use the following command to convert `.mp3` file to `.wav` file within the conda environment created above:
 
 ```
 ffmpeg -i song.mp3 song.wav
 ``` 
-
+You can use `.mp3` files directly on linux, without conversion. 
 ## Dataset Preparation and Training
 If you would like to train the models yourself, please follow the following procedure
 ### Dataset Preparation
