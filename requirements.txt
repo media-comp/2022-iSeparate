@@ -1,0 +1,7 @@
+torch
+torchaudio
+norbert
+julius
+wget
+pyyaml
+soundfile@https://github.com/bastibe/python-soundfile/releases/download/0.11.0b5/soundfile-0.11.0-py2.py3-none-macosx_10_9_x86_64.macosx_11_0_x86_64.whl

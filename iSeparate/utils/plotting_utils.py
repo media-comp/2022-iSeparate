@@ -1,20 +1,20 @@
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pylab as plt
 import numpy as np
+
+matplotlib.use("Agg")
 
 
 def save_figure_to_numpy(fig):
     # save it to a numpy array.
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep="")
     data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
     return data
 
 
 def plot_spectrogram_to_numpy(spectrogram):
     fig, ax = plt.subplots(figsize=(15, 5))
-    im = ax.imshow(spectrogram, aspect="auto", origin="lower",
-                   interpolation='none')
+    im = ax.imshow(spectrogram, aspect="auto", origin="lower", interpolation="none")
     plt.colorbar(im, ax=ax)
     # plt.yscale('log')
     plt.xlabel("Frames")
@@ -25,4 +25,3 @@ def plot_spectrogram_to_numpy(spectrogram):
     data = save_figure_to_numpy(fig)
     plt.close()
     return data
-

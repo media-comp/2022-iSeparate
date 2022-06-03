@@ -8,6 +8,7 @@ dependencies:
   - pip
   - pip:
     - --extra-index-url https://download.pytorch.org/whl/cpu
+    - protobuf<4
     - librosa
     - pyyaml
     - tqdm
