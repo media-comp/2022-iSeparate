@@ -13,13 +13,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 # https://github.com/facebookresearch/demucs/blob/v2/demucs/model.py
 def rescale_conv(conv, reference):
     std = conv.weight.std().detach()
-    scale = (std / reference)**0.5
+    scale = (std / reference) ** 0.5
     conv.weight.data /= scale
     if conv.bias is not None:
         conv.bias.data /= scale
+
 
 # https://github.com/facebookresearch/demucs/blob/v2/demucs/model.py
 def rescale_module(module, reference):
@@ -28,13 +30,14 @@ def rescale_module(module, reference):
             rescale_conv(sub, reference)
 
 
-def get_nonlinearity(nonlinearity='glu'):
-    if nonlinearity == 'glu':
+def get_nonlinearity(nonlinearity="glu"):
+    if nonlinearity == "glu":
         return nn.GLU(dim=1)
-    elif nonlinearity == 'relu':
+    elif nonlinearity == "relu":
         return nn.ReLU()
     else:
         return nn.Identity()
+
 
 # https://github.com/facebookresearch/demucs/blob/v2/demucs/utils.py
 def center_trim(tensor, reference):
@@ -47,23 +50,25 @@ def center_trim(tensor, reference):
         reference = reference.size(-1)
     delta = tensor.size(-1) - reference
     if delta < 0:
-        raise ValueError("tensor must be larger than reference. " f"Delta is {delta}.")
+        raise ValueError(f"tensor must be larger than reference. Delta is {delta}.")
     if delta:
-        tensor = tensor[..., delta // 2:-(delta - delta // 2)]
+        tensor = tensor[..., delta // 2 : -(delta - delta // 2)]
     return tensor
 
 
 class Encoder(nn.Module):
-    def __init__(self,
-                 input_channels,
-                 encoder_init_channels,
-                 encoder_num_layers,
-                 encoder_nonlinearity,
-                 encoder_kernel_size,
-                 encoder_stride,
-                 encoder_growth_rate):
+    def __init__(
+        self,
+        input_channels,
+        encoder_init_channels,
+        encoder_num_layers,
+        encoder_nonlinearity,
+        encoder_kernel_size,
+        encoder_stride,
+        encoder_growth_rate,
+    ):
         super(Encoder, self).__init__()
-        self.num_layers= encoder_num_layers
+        self.num_layers = encoder_num_layers
         self.kernel_size = encoder_kernel_size
         self.stride = encoder_stride
         in_channels = input_channels
@@ -75,7 +80,7 @@ class Encoder(nn.Module):
                 nn.Conv1d(in_channels, out_channels, encoder_kernel_size, encoder_stride),
                 nn.ReLU(),
                 nn.Conv1d(out_channels, int(encoder_growth_rate * out_channels), 1),
-                activation
+                activation,
             )
 
             in_channels = out_channels
@@ -95,17 +100,18 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self,
-                 num_sources,
-                 audio_channels,
-                 decoder_channels,
-                 decoder_kernel_size,
-                 decoder_stride,
-                 decoder_num_layers,
-                 decoder_growth_rate,
-                 decoder_nonlinearity,
-                 decoder_context_size,
-                 ):
+    def __init__(
+        self,
+        num_sources,
+        audio_channels,
+        decoder_channels,
+        decoder_kernel_size,
+        decoder_stride,
+        decoder_num_layers,
+        decoder_growth_rate,
+        decoder_nonlinearity,
+        decoder_context_size,
+    ):
         super(Decoder, self).__init__()
         self.num_layers = decoder_num_layers
         self.kernel_size = decoder_kernel_size
@@ -117,10 +123,12 @@ class Decoder(nn.Module):
         self.decoder_layers = nn.ModuleList()
         for i in range(decoder_num_layers):
             dec_layer = nn.Sequential(
-                nn.Conv1d(in_channels, int(decoder_growth_rate * in_channels), decoder_context_size),
+                nn.Conv1d(
+                    in_channels, int(decoder_growth_rate * in_channels), decoder_context_size
+                ),
                 activation,
                 nn.ConvTranspose1d(in_channels, out_channels, decoder_kernel_size, decoder_stride),
-                nn.ReLU() if i > 0 else nn.Identity()
+                nn.ReLU() if i > 0 else nn.Identity(),
             )
 
             out_channels = in_channels
@@ -135,32 +143,37 @@ class Decoder(nn.Module):
 
 
 class Demucs(nn.Module):
-    def __init__(self,
-                 audio_channels,
-                 input_channels,
-                 num_sources,
-                 encoder_params,
-                 decoder_params,
-                 blstm_hidden_dim,
-                 blstm_num_layers,
-                 rescale,
-                 resample
-                 ):
+    def __init__(
+        self,
+        audio_channels,
+        input_channels,
+        num_sources,
+        encoder_params,
+        decoder_params,
+        blstm_hidden_dim,
+        blstm_num_layers,
+        rescale,
+        resample,
+    ):
         super(Demucs, self).__init__()
         self.num_sources = num_sources
         self.audio_channels = audio_channels
         self.resample = resample
         input_channels = audio_channels if input_channels is None else input_channels
         self.encoder = Encoder(input_channels=input_channels, **encoder_params)
-        blstm_hidden_dim = self.encoder.out_channels if blstm_hidden_dim is None else blstm_hidden_dim
-        self.center_blstm = nn.LSTM(bidirectional=True,
-                                    num_layers=blstm_num_layers,
-                                    hidden_size=blstm_hidden_dim,
-                                    input_size=self.encoder.out_channels)
+        blstm_hidden_dim = (
+            self.encoder.out_channels if blstm_hidden_dim is None else blstm_hidden_dim
+        )
+        self.center_blstm = nn.LSTM(
+            bidirectional=True,
+            num_layers=blstm_num_layers,
+            hidden_size=blstm_hidden_dim,
+            input_size=self.encoder.out_channels,
+        )
         self.center_projection = nn.Linear(2 * blstm_hidden_dim, self.encoder.out_channels)
-        self.decoder = Decoder(num_sources=num_sources,
-                               audio_channels=audio_channels,
-                               **decoder_params)
+        self.decoder = Decoder(
+            num_sources=num_sources, audio_channels=audio_channels, **decoder_params
+        )
         rescale_module(self, reference=rescale)
 
     def valid_length(self, length):
@@ -203,10 +216,10 @@ class Demucs(nn.Module):
         x = x * std + mean
         x = x.view(x.shape[0], self.num_sources, self.audio_channels, x.shape[-1])
 
-        outputs = (x, )
+        outputs = (x,)
         if target is not None:
             target = center_trim(target, x)
-            outputs += (target, )
+            outputs += (target,)
 
         return outputs
 
@@ -224,7 +237,7 @@ class Demucs(nn.Module):
                 shifted = F.pad(shifted, (pad, pad))
                 shifted_out = self.forward(shifted)[0]
                 shifted_out = center_trim(shifted_out, valid_length)
-                out += shifted_out[..., max_shift-offset:]
+                out += shifted_out[..., max_shift - offset :]
             out /= shifts
         else:
             valid_length = self.valid_length(orig_length)

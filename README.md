@@ -1,10 +1,10 @@
 # iSeparate
-This repository consists of an attempt to reimplement, 
-reproduce and unify 
-the various deep learning based methods for Music 
-Source Separation. 
+This repository consists of an attempt to reimplement,
+reproduce and unify
+the various deep learning based methods for Music
+Source Separation.
 
-This project was started as part of the requirement for 
+This project was started as part of the requirement for
 the course [Media Computing in Practice](https://media-comp.github.io/2022/) at the University of Tokyo, under the guidance
 of [Yusuke Matsui](https://yusukematsui.me/) sensei.
 
@@ -12,14 +12,14 @@ This is a work in progress, current results are decent but not as good as report
 Will continue to try and improve the quality of separation.
 
 ## Currently implemented methods:
-| Model | Paper | Official code |
-| :---: | :---: | :---: |
-| D3Net  | [Densely connected multidilated convolutional networks for dense prediction tasks <br />(CVPR 2021, Takahashi et al., Sony)](https://openaccess.thecvf.com/content/CVPR2021/papers/Takahashi_Densely_Connected_Multi-Dilated_Convolutional_Networks_for_Dense_Prediction_Tasks_CVPR_2021_paper.pdf) | [link](https://github.com/sony/ai-research-code/tree/master/d3net/music-source-separation) |
-| Demucs v2  | [Music Source Separation in the Waveform Domain <br />(Arxiv 2021, Defossez et al., Facebook, INRIA)](https://hal.archives-ouvertes.fr/hal-02379796/document) | [link](https://github.com/facebookresearch/demucs/tree/v2) |
+|   Model   |                                                                                                                                                Paper                                                                                                                                                |                                       Official code                                        |
+|:---------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------:|
+|   D3Net   | [Densely connected multidilated convolutional networks for dense prediction tasks <br />(CVPR 2021, Takahashi et al., Sony)](https://openaccess.thecvf.com/content/CVPR2021/papers/Takahashi_Densely_Connected_Multi-Dilated_Convolutional_Networks_for_Dense_Prediction_Tasks_CVPR_2021_paper.pdf) | [link](https://github.com/sony/ai-research-code/tree/master/d3net/music-source-separation) |
+| Demucs v2 |                                                                    [Music Source Separation in the Waveform Domain <br />(Arxiv 2021, Defossez et al., Facebook, INRIA)](https://hal.archives-ouvertes.fr/hal-02379796/document)                                                                    |                 [link](https://github.com/facebookresearch/demucs/tree/v2)                 |
 
 ## Getting Started
 ### For Linux users:
-Install the [libsndfile](http://www.mega-nerd.com/libsndfile/) and 
+Install the [libsndfile](http://www.mega-nerd.com/libsndfile/) and
 [soundstretch](https://www.surina.net/soundtouch/soundstretch.html) libraries using your packagemanager, for example:
 
   ```shell
@@ -51,22 +51,22 @@ conda activate <envname>
 
 ## Separate using pre-trained model
 ### Create your own Karaoke tracks!
-**Currently the D3Net vocals model has been uploaded to Huggingface** and you can 
+**Currently the D3Net vocals model has been uploaded to Huggingface** and you can
 run vocals-accompaniment separation
 using that model with the `separate.py` script. Invoke the separation as follows:
-  
+
 ```shell
 python separate.py \
                 -c configs/d3net/eval.yaml \
                 -i path/to/song.wav
 ```
-Currently only `.wav` files are supported on windows. 
+Currently only `.wav` files are supported on windows.
 You can use the following command to convert `.mp3` file to `.wav` file within the conda environment created above:
 
 ```
 ffmpeg -i song.mp3 song.wav
-``` 
-You can use `.mp3` files directly on linux, without conversion. 
+```
+You can use `.mp3` files directly on linux, without conversion.
 ## Dataset Preparation and Training
 If you would like to train the models yourself, please follow the following procedure
 ### Dataset Preparation
@@ -97,7 +97,7 @@ python prepare_dataset.py \
                         --make-symlink
 ```
 
-The `prepare_dataset.py` downloads the data in STEMS format to the directory specified by `--root` and then extracts the 
+The `prepare_dataset.py` downloads the data in STEMS format to the directory specified by `--root` and then extracts the
 wav files into the directory specified by `--wav-root`. If you want to delete the STEMS and keep only the wav files,
 you can use the `--keep-wav-only` option. The `--make-symlink` option will create a symbolic link from the wav directory to the `data/MUSDB18-wav`
 directory. If you wanted you could also edit the config files in `configs` directory to point to the dataset directory.
@@ -124,11 +124,10 @@ python -m torch.distributed.run \
 
 ## Extending and Contributing
 If you would like to add a new method and train on the MUSDB18 dataset, do the following steps
-    
+
    - create a model package: `models/awesome-method`
         - implement your model
         - add the `separate.py` file and implement the `load_models` and `separate` functions
         - add the model to `model_switcher.py`
    - create and/or add your custom loss functions to the `losses/loss_switcher.py`
-   - create config files following the examples in `configs` directory 
-   
+   - create config files following the examples in `configs` directory

@@ -1,21 +1,19 @@
 import io
+import random
+import subprocess
 import tempfile
+from shutil import which
 
 import librosa
-import torch
-import random
-
 import numpy as np
-
-from shutil import which
-import subprocess
+import torch
 from scipy.io import wavfile
 
 
 def i16_pcm(wav):
     if wav.dtype == np.int16:
         return wav
-    return (wav * 2**15).clamp_(-2**15, 2**15 - 1).short()
+    return (wav * 2**15).clamp_(-(2**15), 2**15 - 1).short()
 
 
 def f32_pcm(wav):
@@ -60,15 +58,23 @@ def sign_flip(audio):
     return audio
 
 
-def pitch_shift_and_time_stretch(audio, source, sample_rate=44100,
-                                 max_pitch=2, max_tempo=12, tempo_std=5,
-                                 p=0.2, quick=True, use_soundstretch=False):
+def pitch_shift_and_time_stretch(
+    audio,
+    source,
+    sample_rate=44100,
+    max_pitch=2,
+    max_tempo=12,
+    tempo_std=5,
+    p=0.2,
+    quick=True,
+    use_soundstretch=False,
+):
     if random.random() < p:
         delta_pitch = random.randint(-max_pitch, max_pitch)
         delta_tempo = random.gauss(0, tempo_std)
         delta_tempo = min(max(-max_tempo, delta_tempo), max_tempo)
 
-        if which('soundstretch') is not None and use_soundstretch:
+        if which("soundstretch") is not None and use_soundstretch:
             outfile = tempfile.NamedTemporaryFile(suffix=".wav")
             in_ = io.BytesIO()
             wavfile.write(in_, sample_rate, i16_pcm(audio).t().numpy())
@@ -81,7 +87,7 @@ def pitch_shift_and_time_stretch(audio, source, sample_rate=44100,
             ]
             if quick:
                 command += ["-quick"]
-            if source == 'vocals':
+            if source == "vocals":
                 command += ["-speech"]
             try:
                 subprocess.run(command, capture_output=True, input=in_.getvalue(), check=True)
@@ -105,10 +111,12 @@ class Augmenter:
     """
     Class to combine and apply data augmentations
     """
+
     def __init__(self, augmentation_list):
         """
         initialize the required augmentations
-        :param augmentation_list: list of strings with the function names. E.g. ['swap_channel', 'random_gain']
+        :param augmentation_list: list of strings with the function names.
+        E.g. ['swap_channel', 'random_gain']
         """
         self.augmentations = [globals()[aug] for aug in augmentation_list]
 

@@ -4,12 +4,14 @@ import random
 
 import torch
 import torch.nn.functional as F
+import torchaudio
 from torch.nn import Identity
 from torch.utils.data import Dataset
 
-import torchaudio
-
-from datasets.data_augmentations import Augmenter, pitch_shift_and_time_stretch
+from iSeparate.datasets.data_augmentations import (
+    Augmenter,
+    pitch_shift_and_time_stretch,
+)
 
 
 def load_audio(audio_path, start=0, duration=None, target_sr=44100, mono=False, cache=None):
@@ -31,10 +33,9 @@ def load_audio(audio_path, start=0, duration=None, target_sr=44100, mono=False, 
     frame_offset = int(start * target_sr)
     num_frames = -1 if duration is None else int(duration * target_sr)
     if cache is not None and audio_path in cache:
-        audio = cache[audio_path][:, frame_offset:frame_offset + num_frames]
+        audio = cache[audio_path][:, frame_offset : frame_offset + num_frames]
     else:
         audio, native_sr = torchaudio.load(audio_path)
-        # audio, native_sr = torchaudio.load(audio_path, num_frames=num_frames, frame_offset=frame_offset)
         if mono:
             audio = audio.mean(dim=0, keepdim=True)
 
@@ -43,7 +44,7 @@ def load_audio(audio_path, start=0, duration=None, target_sr=44100, mono=False, 
         if cache is not None:
             cache[audio_path] = audio
 
-        audio = audio[:, frame_offset:frame_offset + num_frames]
+        audio = audio[:, frame_offset : frame_offset + num_frames]
 
     num_frames = audio.shape[1] if duration is None else int(duration * target_sr)
 
@@ -60,11 +61,11 @@ def get_total_audio_length(songs):
     :param songs: list of song folders
     :return: returns the total duration in seconds of all songs in the list
     """
-    total_length = 0.
+    total_length = 0.0
     infos = {}
     for song in songs:
         # print(song)
-        audio_file = [f for f in os.listdir(song) if f.endswith('.wav')][0]
+        audio_file = [f for f in os.listdir(song) if f.endswith(".wav")][0]
         audio_file = os.path.join(song, audio_file)
         info = torchaudio.info(os.path.abspath(audio_file))
         infos[song] = info
@@ -79,21 +80,23 @@ class SeparationDataset(Dataset):
     The MUSDB dataset needs to be prepared using prepare_musdb.sh
     """
 
-    def __init__(self,
-                 target_sources,
-                 mixing_sources,
-                 data_root,
-                 song_lists,
-                 sample_rate,
-                 mono,
-                 seq_dur,
-                 augmentations,
-                 pitch_shift_time_stretch_params,
-                 random_mix,
-                 seed,
-                 iseval,
-                 cache=False,
-                 samples_per_epoch=None):
+    def __init__(
+        self,
+        target_sources,
+        mixing_sources,
+        data_root,
+        song_lists,
+        sample_rate,
+        mono,
+        seq_dur,
+        augmentations,
+        pitch_shift_time_stretch_params,
+        random_mix,
+        seed,
+        iseval,
+        cache=False,
+        samples_per_epoch=None,
+    ):
         """
         Initialize the dataset
 
@@ -123,10 +126,10 @@ class SeparationDataset(Dataset):
         self.seed = seed
         self.songs = []
         for song_list in song_lists:
-            with open(song_list, 'r') as f:
+            with open(song_list, "r") as f:
                 songs = f.readlines()
             # print(song_list)
-            self.songs += [os.path.join(self.data_root, s.strip()) for s in songs if s != '\n']
+            self.songs += [os.path.join(self.data_root, s.strip()) for s in songs if s != "\n"]
         self.total_audio_length, self.song_infos = get_total_audio_length(self.songs)
         self.cache = None
         self.samples_per_epoch = samples_per_epoch
@@ -165,8 +168,10 @@ class SeparationDataset(Dataset):
                 info = self.song_infos[song]
                 duration = info.num_frames / info.sample_rate
                 start = (duration / 2) - (self.seq_dur / 2)
-            sources = {f: [start, self.seq_dur, os.path.join(song, f + '.wav'),
-                           self.song_infos[song]] for f in self.mixing_sources}
+            sources = {
+                f: [start, self.seq_dur, os.path.join(song, f + ".wav"), self.song_infos[song]]
+                for f in self.mixing_sources
+            }
         else:
             if self.random_mix:
                 for source in self.mixing_sources:
@@ -175,28 +180,45 @@ class SeparationDataset(Dataset):
                     duration = info.num_frames / info.sample_rate
                     end = 0 if duration < self.seq_dur else duration - self.seq_dur
                     random_start = random.uniform(0, end)
-                    sources[source] = [random_start, self.seq_dur, os.path.join(song, source + '.wav'), info]
+                    sources[source] = [
+                        random_start,
+                        self.seq_dur,
+                        os.path.join(song, source + ".wav"),
+                        info,
+                    ]
             else:
                 song = random.choice(self.songs)
                 info = self.song_infos[song]
                 duration = info.num_frames / info.sample_rate
                 end = 0 if duration < self.seq_dur else duration - self.seq_dur
                 random_start = random.uniform(0, end)
-                sources = {f: [random_start, self.seq_dur, os.path.join(song, f + '.wav'),
-                               info] for f in self.mixing_sources}
+                sources = {
+                    f: [random_start, self.seq_dur, os.path.join(song, f + ".wav"), info]
+                    for f in self.mixing_sources
+                }
         source_audios = []
         target_audios = []
         for source in sources:
             start, duration, audio_path, info = sources[source]
-            audio, self.cache = load_audio(audio_path, start=start, duration=duration,
-                                           target_sr=self.sample_rate, mono=self.mono, cache=self.cache)
+            audio, self.cache = load_audio(
+                audio_path,
+                start=start,
+                duration=duration,
+                target_sr=self.sample_rate,
+                mono=self.mono,
+                cache=self.cache,
+            )
             if not self.eval:
                 audio = self.augment(audio)
                 if self.pitch_shift_time_stretch_params is not None:
                     # apply pitch shift and time stretch separately
-                    out_length = int((1 - 0.01 * self.pitch_shift_time_stretch_params['max_tempo']) * audio.shape[-1])
-                    audio = pitch_shift_and_time_stretch(audio, source, self.sample_rate,
-                                                         **self.pitch_shift_time_stretch_params)
+                    out_length = int(
+                        (1 - 0.01 * self.pitch_shift_time_stretch_params["max_tempo"])
+                        * audio.shape[-1]
+                    )
+                    audio = pitch_shift_and_time_stretch(
+                        audio, source, self.sample_rate, **self.pitch_shift_time_stretch_params
+                    )
                     audio = audio[:, :out_length]
             source_audios.append(audio)
             if source in self.target_sources:
