@@ -44,7 +44,7 @@ def huber_loss(output, target, weights=None, delta=1.0):
     loss = (loss * weights).sum() / weights.sum()
     return loss
 
-def smooth_loss(output, target, weights=None, beta=1.0):
+def smoothl1_loss(output, target, weights=None, beta=1.0):
     """
     beta: Threshold at which L1 and L2 losses interchange
           Value must be non-negative.
