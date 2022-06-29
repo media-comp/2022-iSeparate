@@ -72,7 +72,7 @@ If you would like to train the models yourself, please follow the following proc
 ### Dataset Preparation
 iSeparate currently supports the [MUSDB18](https://zenodo.org/record/1117372#.Ymcqr9rP1PY) dataset.
 This dataset is in the [Native Instruments STEMS](https://www.native-instruments.com/en/specials/stems/) format.
-However, it is easier to deal with decded wav files. To do that you can run the `prepare_dataset.py` file.
+However, it is easier to deal with decoded `.wav` files. To do that you can run the `prepare_dataset.py` file.
 
 If you would like to download a small 7s version of the dataset for testing the code, run
 
