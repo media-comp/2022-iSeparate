@@ -69,15 +69,17 @@ ffmpeg -i song.mp3 song.wav
 You can use `.mp3` files directly on linux, without conversion.
 ## Dataset Preparation and Training
 If you would like to train the models yourself, please follow the following procedure
-### Dataset Preparation
+### Dataset Preparation (MUSDB18)
 iSeparate currently supports the [MUSDB18](https://zenodo.org/record/1117372#.Ymcqr9rP1PY) dataset.
 This dataset is in the [Native Instruments STEMS](https://www.native-instruments.com/en/specials/stems/) format.
-However, it is easier to deal with decoded `.wav` files. To do that you can run the `prepare_dataset.py` file.
+
+However, it is easier to deal with decoded `.wav` files. To do that you can run the `prepare_musdb_dataset.py` file.
+
 
 If you would like to download a small 7s version of the dataset for testing the code, run
 
 ```shell
-python prepare_dataset.py \
+python prepare_musdb_dataset.py \
                         --root data/MUSDB18-sample \
                         --wav-root data/MUSDB18-sample-wav \
                         --filelists-dir filelists/musdb-sample \
@@ -89,7 +91,7 @@ python prepare_dataset.py \
 If you would like to download the full dataset for training, run
 
 ```shell
-python prepare_dataset.py \
+python prepare_musdb_dataset.py \
                         --root data/MUSDB18 \
                         --wav-root data/MUSDB18-wav \
                         --filelists-dir filelists/musdb \
@@ -97,10 +99,25 @@ python prepare_dataset.py \
                         --make-symlink
 ```
 
-The `prepare_dataset.py` downloads the data in STEMS format to the directory specified by `--root` and then extracts the
+The `prepare_musdb_dataset.py` downloads the data in STEMS format to the directory specified by `--root` and then extracts the
 wav files into the directory specified by `--wav-root`. If you want to delete the STEMS and keep only the wav files,
 you can use the `--keep-wav-only` option. The `--make-symlink` option will create a symbolic link from the wav directory to the `data/MUSDB18-wav`
 directory. If you wanted you could also edit the config files in `configs` directory to point to the dataset directory.
+### Dataset Preparation (MTASS)
+MTASS is an open-source dataset in which mixtures contain three types of audio signals, speech, music and noise. ([Original Repo](https://github.com/Windstudent/Complex-MTASSNet/))  
+iSeparate currently doesn't support MTASS dataset, but the data preparation code is implemented.  
+If you modify `training.py` and config files, you can train the model on MTASS dataset.  
+
+If you would like to prepare MTASS dataset, run
+```
+python prepare_mtass_dataset.py \
+                        --root data/MTASS \
+                        --wav-root data/MTASS-wav \
+                        --filelists-dir filelists/mtass \
+                        --keep-wav-only \
+                        --make-symlink
+```
+Options are same as those of musdb datset preparation code.
 
 ### Training
 Nvidia GPU's are required for training. These models require quite a lot of VRAM, you can change the `batch_size`
